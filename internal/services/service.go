@@ -2,12 +2,12 @@ package services
 
 import (
 	"context"
-	"github.com/vladislavninetyeight/service/tree/main/internal/model/internal/model"
+	"github.com/vladislavninetyeight/service/internal/model"
 )
 
 type UserService interface {
 	Create(ctx context.Context, user model.UserDetail) (uint, error)
-	GetAll(ctx context.Context) ([]model.User, error)
+	GetAll(ctx context.Context, filter *model.Filter) ([]model.User, error)
 	Update(ctx context.Context, user model.UserDetail, id uint) (model.User, error)
 }
 

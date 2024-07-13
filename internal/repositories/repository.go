@@ -2,12 +2,12 @@ package repositories
 
 import (
 	"context"
-	"github.com/vladislavninetyeight/service/tree/main/internal/model/internal/model"
+	"github.com/vladislavninetyeight/service/internal/model"
 )
 
 type UserRepository interface {
 	Create(ctx context.Context, user model.UserDetail) (model.User, error)
-	GetAll(ctx context.Context) ([]model.User, error)
+	GetAll(ctx context.Context, filter *model.Filter) ([]model.User, error)
 	Get(ctx context.Context, id uint) (model.User, error)
 	Update(ctx context.Context, id uint, user model.UserDetail) error
 	Delete(ctx context.Context, id uint) error

@@ -6,6 +6,10 @@ type GetAllUserResponse struct {
 	Users []User
 }
 
+type UpdateUserResponse struct {
+	User
+}
+
 type User struct {
 	ID        uint
 	Detail    UserDetail
@@ -14,6 +18,6 @@ type User struct {
 }
 
 type UserDetail struct {
-	Name  string
-	Phone string
+	Name  string `json:"name"`
+	Phone string `json:"phone"`
 }

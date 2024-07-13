@@ -2,9 +2,9 @@ package post
 
 import (
 	"context"
-	"github.com/vladislavninetyeight/service/tree/main/internal/model/internal/model"
-	"github.com/vladislavninetyeight/service/tree/main/internal/model/internal/repositories"
-	rep "github.com/vladislavninetyeight/service/tree/main/internal/model/internal/repositories/post/model"
+	"github.com/vladislavninetyeight/service/internal/model"
+	"github.com/vladislavninetyeight/service/internal/repositories"
+	rep "github.com/vladislavninetyeight/service/internal/repositories/post/model"
 	"sync"
 )
 

@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/vladislavninetyeight/service/tree/main/internal/model/internal/app"
+	"github.com/vladislavninetyeight/service/internal/app"
 )
 
 func main() {
@@ -10,5 +10,8 @@ func main() {
 		panic(err)
 	}
 
-	application.Serve()
+	err = application.Serve()
+	if err != nil {
+		panic(err)
+	}
 }

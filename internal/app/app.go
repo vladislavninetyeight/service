@@ -1,7 +1,8 @@
 package app
 
 import (
-	"github.com/vladislavninetyeight/service/tree/main/internal/model/internal/providers"
+	"github.com/vladislavninetyeight/service/internal/app/router"
+	"github.com/vladislavninetyeight/service/internal/providers"
 )
 
 type App struct {
@@ -34,6 +35,14 @@ func (a *App) initServiceProvider() error {
 	return nil
 }
 
-func (a *App) Serve() {
-	a.serviceProvider.GetHTTPServer().Run()
+func (a *App) Serve() error {
+	routs := router.New(*a.serviceProvider)
+	a.serviceProvider.GetHTTPServer().Handler = routs
+	err := a.serviceProvider.GetHTTPServer().ListenAndServe()
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

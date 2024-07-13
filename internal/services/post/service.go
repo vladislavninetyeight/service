@@ -2,9 +2,9 @@ package user
 
 import (
 	"context"
-	"github.com/vladislavninetyeight/service/tree/main/internal/model/internal/model"
-	"github.com/vladislavninetyeight/service/tree/main/internal/model/internal/repositories"
-	"github.com/vladislavninetyeight/service/tree/main/internal/model/internal/services"
+	"github.com/vladislavninetyeight/service/internal/model"
+	"github.com/vladislavninetyeight/service/internal/repositories"
+	"github.com/vladislavninetyeight/service/internal/services"
 )
 
 var _ services.PostService = (*service)(nil)

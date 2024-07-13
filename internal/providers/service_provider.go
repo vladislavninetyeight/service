@@ -1,18 +1,18 @@
 package providers
 
 import (
-	"github.com/vladislavninetyeight/service/tree/main/internal/model/internal/app/server"
-	repPost "github.com/vladislavninetyeight/service/tree/main/internal/model/internal/repositories/post"
-	repUser "github.com/vladislavninetyeight/service/tree/main/internal/model/internal/repositories/user"
-	"github.com/vladislavninetyeight/service/tree/main/internal/model/internal/services"
-	post "github.com/vladislavninetyeight/service/tree/main/internal/model/internal/services/post"
-	user "github.com/vladislavninetyeight/service/tree/main/internal/model/internal/services/user"
+	repPost "github.com/vladislavninetyeight/service/internal/repositories/post"
+	repUser "github.com/vladislavninetyeight/service/internal/repositories/user"
+	"github.com/vladislavninetyeight/service/internal/services"
+	post "github.com/vladislavninetyeight/service/internal/services/post"
+	user "github.com/vladislavninetyeight/service/internal/services/user"
+	"net/http"
 )
 
 type ServiceProvider struct {
 	userService services.UserService
 	postService services.PostService
-	server      *server.Server
+	http        *http.Server
 }
 
 func NewServiceProvider() *ServiceProvider {
@@ -34,10 +34,12 @@ func (sp *ServiceProvider) GetPostService() services.PostService {
 	return sp.postService
 }
 
-func (sp *ServiceProvider) GetHTTPServer() *server.Server {
-	if sp.server == nil {
-		sp.server = server.NewServer(sp)
+func (sp *ServiceProvider) GetHTTPServer() *http.Server {
+	if sp.http == nil {
+		sp.http = &http.Server{
+			Addr: ":8080",
+		}
 	}
 
-	return sp.server
+	return sp.http
 }

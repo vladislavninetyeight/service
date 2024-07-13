@@ -1,9 +1,8 @@
 package converter
 
 import (
-	"github.com/vladislavninetyeight/service/tree/main/internal/model/internal/model"
-	rep "github.com/vladislavninetyeight/service/tree/main/internal/model/internal/repositories/user/model"
-	"time"
+	"github.com/vladislavninetyeight/service/internal/model"
+	rep "github.com/vladislavninetyeight/service/internal/repositories/user/model"
 )
 
 func ToUserFromRep(user rep.User) model.User {
@@ -34,7 +33,12 @@ func FromUserDetailToRep(id uint, detail model.UserDetail) rep.User {
 			Name:  detail.Name,
 			Phone: detail.Phone,
 		},
-		CreatedAT: time.Now(),
-		UpdatedAT: time.Now(),
+	}
+}
+
+func FromUserDetailToRepUserDetail(detail model.UserDetail) rep.UserDetail {
+	return rep.UserDetail{
+		Name:  detail.Name,
+		Phone: detail.Phone,
 	}
 }
