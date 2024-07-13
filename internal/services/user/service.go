@@ -59,5 +59,10 @@ func (s *service) Update(ctx context.Context, detail model.UserDetail, id uint) 
 	return user, nil
 }
 func (s *service) Delete(ctx context.Context, id uint) error {
+	err := s.repo.Delete(ctx, id)
+	if err != nil {
+		// TODO
+	}
+
 	return nil
 }

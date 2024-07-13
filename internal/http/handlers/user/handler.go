@@ -13,6 +13,7 @@ type Service interface {
 	Create(ctx context.Context, user model.UserDetail) (uint, error)
 	GetAll(ctx context.Context, filter *model.Filter) ([]model.User, error)
 	Update(ctx context.Context, user model.UserDetail, id uint) (model.User, error)
+	Delete(ctx context.Context, id uint) error
 }
 
 func Store(request *http.Request, service Service) (uint, error) {
@@ -62,6 +63,19 @@ func Update(request *http.Request, service Service) (model.UpdateUserResponse, e
 	return converter.FromUserToUpdateUserResponse(user), nil
 }
 
-func Delete(id uint) {
+func Delete(request *http.Request, service Service) error {
+	id := chi.URLParam(request, "id")
+	ctx := context.TODO()
 
+	userId, err := strconv.Atoi(id)
+	if err != nil {
+		// TODO
+	}
+
+	err = service.Delete(ctx, uint(userId))
+	if err != nil {
+		// TODO
+	}
+
+	return nil
 }

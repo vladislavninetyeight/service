@@ -65,5 +65,12 @@ func initRoutes(r chi.Router, provider providers.ServiceProvider) chi.Router {
 		}
 	})
 
+	r.Delete("/user/{id}", func(writer http.ResponseWriter, request *http.Request) {
+		err := user.Delete(request, provider.GetUserService())
+		if err != nil {
+			// TODO
+		}
+	})
+
 	return r
 }
