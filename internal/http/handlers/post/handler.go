@@ -1,19 +1,29 @@
 package post
 
-import "net/http"
+import (
+	"context"
+	"github.com/vladislavninetyeight/service/internal/converter"
+	"github.com/vladislavninetyeight/service/internal/model"
+	"net/http"
+)
 
-func Store(http.ResponseWriter, *http.Request) {
-
+type Service interface {
+	Create(ctx context.Context, post model.PostDetail) (uint, error)
+	GetAll(ctx context.Context) ([]model.Post, error)
 }
 
-func GetAll(writer http.ResponseWriter, request *http.Request) {
-	
+func Store(request *http.Request, service Service) (uint, error) {
+	ctx := context.TODO()
+
+	post := converter.FromRequestToPostDetail(request)
+	id, err := service.Create(ctx, post)
+	if err != nil {
+		// TODO
+	}
+
+	return id, nil
 }
 
-func Update(writer http.ResponseWriter, request *http.Request) {
-	
-}
+func GetAll(request *http.Request, service Service) {
 
-func Delete(writer http.ResponseWriter, request *http.Request) {
-	
 }

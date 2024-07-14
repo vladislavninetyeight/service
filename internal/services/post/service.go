@@ -20,7 +20,13 @@ func NewPostService(repo repositories.PostRepository) *service {
 }
 
 func (s *service) Create(ctx context.Context, post model.PostDetail) (uint, error) {
-	return 0, nil
+	id, err := s.repo.Create(ctx, post)
+
+	if err != nil {
+		// TODO
+	}
+
+	return id, nil
 }
 func (s *service) GetAll(ctx context.Context) ([]model.Post, error) {
 	return []model.Post{}, nil

@@ -10,11 +10,7 @@ type Post struct {
 }
 
 type PostDetail struct {
-	title  string
-	body   string
-	userID uint
+	Title  string
+	Body   string
+	UserID uint
 }
-
-func (p *PostDetail) GetTitle() string { return p.title }
-func (p *PostDetail) GetBody() string  { return p.body }
-func (p *PostDetail) GetUserID() uint  { return p.userID }

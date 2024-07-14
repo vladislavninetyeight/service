@@ -11,7 +11,7 @@ func FromRequestToUserDetail(request *http.Request) model.UserDetail {
 
 	err := json.NewDecoder(request.Body).Decode(&detail)
 	if err != nil {
-		panic(err)
+		// TODO
 	}
 	return detail
 }

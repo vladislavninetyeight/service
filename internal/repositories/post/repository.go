@@ -23,8 +23,8 @@ func NewPostRepository() *repository {
 }
 
 func (r *repository) Create(ctx context.Context, post model.PostDetail) (uint, error) {
-	//TODO implement me
-	panic("implement me")
+	r.mu.Lock()
+	defer r.mu.Unlock()
 }
 
 func (r *repository) GetAll(ctx context.Context) ([]model.Post, error) {
