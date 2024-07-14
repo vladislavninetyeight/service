@@ -2,6 +2,10 @@ package model
 
 import "time"
 
+type PostGetAllResponse struct {
+	Posts []Post
+}
+
 type Post struct {
 	ID        uint
 	Detail    PostDetail
@@ -10,7 +14,7 @@ type Post struct {
 }
 
 type PostDetail struct {
-	Title  string
-	Body   string
-	UserID uint
+	Title  string `json:"title"`
+	Body   string `json:"body"`
+	UserID uint   `json:"user_id"`
 }

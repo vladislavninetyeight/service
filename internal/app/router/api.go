@@ -91,12 +91,12 @@ func initRoutes(r chi.Router, provider providers.ServiceProvider) chi.Router {
 	})
 
 	r.Get("/posts", func(writer http.ResponseWriter, request *http.Request) {
-		users, err := user.GetAll(request, provider.GetUserService())
+		posts, err := post.GetAll(request, provider.GetPostService())
 		if err != nil {
 			// TODO
 		}
 
-		response, err := json.Marshal(users)
+		response, err := json.Marshal(posts)
 		if err != nil {
 			// TODO
 		}

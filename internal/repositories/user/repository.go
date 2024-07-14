@@ -60,7 +60,7 @@ func (r *repository) applyFilters(users *[]rep.User, filter *model.Filter) {
 
 func (r *repository) applySorts(users *[]rep.User, filter *model.Filter) {
 	u := *users
-	if strings.ToLower(filter.TopPostsAmount) == "asc" {
+	if strings.ToLower(filter.Sort) == "asc" {
 		sort.Slice(u, func(i, j int) bool {
 			return u[i].ID < u[j].ID
 		})

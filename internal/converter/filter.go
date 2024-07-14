@@ -30,12 +30,12 @@ func FromRequestToFilter(request *http.Request) (*model.Filter, error) {
 	}
 
 	return &model.Filter{
-		FromCreatedAt:  fromCreatedAt,
-		ToCreatedAt:    toCreatedAt,
-		Name:           request.URL.Query().Get("name"),
-		Limit:          uint(limit),
-		Offset:         uint(offset),
-		TopPostsAmount: request.URL.Query().Get("topPostsAmount"),
+		FromCreatedAt: fromCreatedAt,
+		ToCreatedAt:   toCreatedAt,
+		Name:          request.URL.Query().Get("name"),
+		Limit:         uint(limit),
+		Offset:        uint(offset),
+		Sort:          request.URL.Query().Get("sort"),
 	}, nil
 }
 

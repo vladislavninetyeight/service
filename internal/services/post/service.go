@@ -29,7 +29,12 @@ func (s *service) Create(ctx context.Context, post model.PostDetail) (uint, erro
 	return id, nil
 }
 func (s *service) GetAll(ctx context.Context) ([]model.Post, error) {
-	return []model.Post{}, nil
+	posts, err := s.repo.GetAll(ctx)
+	if err != nil {
+		// TODO
+	}
+
+	return posts, nil
 }
 func (s *service) Get(ctx context.Context, id uint) (model.Post, error) {
 	return model.Post{}, nil

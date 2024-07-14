@@ -5,8 +5,8 @@ import "time"
 type Post struct {
 	ID        uint
 	Detail    PostDetail
-	CreatedAt *time.Time
-	UpdatedAt *time.Time
+	CreatedAt time.Time
+	UpdatedAt time.Time
 }
 
 type PostDetail struct {
