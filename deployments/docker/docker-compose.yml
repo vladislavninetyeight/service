@@ -1,0 +1,29 @@
+version: "3.9"
+
+services:
+  project:
+    ports:
+      - "9000:8080"
+    build:
+      context: ../..
+    restart: always
+    depends_on:
+      - db
+    container_name: project
+    logging:
+      driver: json-file
+      options:
+        max-size: "100m"
+        max-file: "5"
+  db:
+    image: postgres:alpine
+    restart: always
+    container_name: db_project
+    environment:
+      - POSTGRES_USER=vladislav
+      - POSTGRES_PASSWORD=456
+      - POSTGRES_DB=postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./data:/var/lib/postgresql/data

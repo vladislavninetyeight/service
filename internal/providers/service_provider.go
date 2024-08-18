@@ -1,45 +1,51 @@
 package providers
 
 import (
+	"context"
 	repPost "github.com/vladislavninetyeight/service/internal/repositories/post"
 	repUser "github.com/vladislavninetyeight/service/internal/repositories/user"
-	"github.com/vladislavninetyeight/service/internal/services"
 	post "github.com/vladislavninetyeight/service/internal/services/post"
-	user "github.com/vladislavninetyeight/service/internal/services/user"
-	"net/http"
+	"github.com/vladislavninetyeight/service/internal/services/user"
+	"github.com/vladislavninetyeight/service/pkg/client/postgresql"
 )
 
 type ServiceProvider struct {
-	userService services.UserService
-	postService services.PostService
-	http        *http.Server
+	userService user.Service
+	postService post.Service
 }
 
-func NewServiceProvider() *ServiceProvider {
-	return &ServiceProvider{}
+var serviceProvider *ServiceProvider
+
+func Container() *ServiceProvider {
+	if serviceProvider == nil {
+		serviceProvider = &ServiceProvider{}
+	}
+
+	return serviceProvider
 }
 
-func (sp *ServiceProvider) GetUserService() services.UserService {
+func (sp *ServiceProvider) GetUserService() user.Service {
 	if sp.userService == nil {
-		sp.userService = user.NewUserService(repUser.NewUserRepository())
+		conf := postgresql.GetConfig()
+
+		client, err := postgresql.NewClient(context.TODO(), conf)
+		if err != nil {
+			panic(err)
+		}
+		sp.userService = user.NewUserService(repUser.NewUserRepository(client))
 	}
 
 	return sp.userService
 }
-func (sp *ServiceProvider) GetPostService() services.PostService {
+func (sp *ServiceProvider) GetPostService() post.Service {
 	if sp.postService == nil {
-		sp.postService = post.NewPostService(repPost.NewPostRepository())
+		conf := postgresql.GetConfig()
+		client, err := postgresql.NewClient(context.TODO(), conf)
+		if err != nil {
+			panic(err)
+		}
+		sp.postService = post.NewPostService(repPost.NewPostRepository(client))
 	}
 
 	return sp.postService
-}
-
-func (sp *ServiceProvider) GetHTTPServer() *http.Server {
-	if sp.http == nil {
-		sp.http = &http.Server{
-			Addr: ":8080",
-		}
-	}
-
-	return sp.http
 }

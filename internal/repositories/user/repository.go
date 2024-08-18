@@ -2,27 +2,39 @@ package user
 
 import (
 	"context"
-	"errors"
+	"fmt"
+	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/vladislavninetyeight/service/internal/model"
-	"github.com/vladislavninetyeight/service/internal/repositories"
-	"github.com/vladislavninetyeight/service/internal/repositories/user/converter"
-	rep "github.com/vladislavninetyeight/service/internal/repositories/user/model"
-	"sort"
-	"strings"
 	"sync"
 	"time"
 )
 
-var _ repositories.UserRepository = (*repository)(nil)
+type Repository interface {
+	Create(ctx context.Context, user model.UserDetail) (model.User, error)
+	GetAll(ctx context.Context, filter *model.Filter) ([]model.User, error)
+	Get(ctx context.Context, id uint) (model.User, error)
+	Update(ctx context.Context, id uint, user model.UserDetail) error
+	Delete(ctx context.Context, id uint) error
+}
+
+type Driver interface {
+	Exec(ctx context.Context, sql string, arguments ...any) (pgconn.CommandTag, error)
+	Query(ctx context.Context, sql string, arguments ...any) (pgx.Rows, error)
+	QueryRow(ctx context.Context, sql string, arguments ...any) pgx.Row
+	Begin(ctx context.Context) (pgx.Tx, error)
+}
+
+var _ Repository = (*repository)(nil)
 
 type repository struct {
-	driver map[uint]*rep.User
+	driver Driver
 	mu     sync.RWMutex
 }
 
-func NewUserRepository() *repository {
+func NewUserRepository(driver Driver) *repository {
 	return &repository{
-		driver: make(map[uint]*rep.User),
+		driver: driver,
 		mu:     sync.RWMutex{},
 	}
 }
@@ -30,103 +42,86 @@ func NewUserRepository() *repository {
 func (r *repository) GetAll(ctx context.Context, filter *model.Filter) ([]model.User, error) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
+	query := `
+		SELECT *
+		FROM users
+	`
+	params := make([]any, 0, 6)
 
-	users := make([]rep.User, 0)
+	r.applyFilters(&query, &params, filter)
+	r.applySorts(&query, &params, filter)
+	r.offset(&query, &params, filter)
+	r.limit(&query, &params, filter)
 
-	r.applyFilters(&users, filter)
-	r.applySorts(&users, filter)
-	r.offset(&users, filter)
-	r.limit(&users, filter)
+	users, err := r.driver.Query(ctx, query, params...)
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(users)
 
-	return converter.ToUsersFromReps(users), nil
+	return []model.User{}, nil
 }
 
-func (r *repository) applyFilters(users *[]rep.User, filter *model.Filter) {
-	for _, v := range r.driver {
-		if filter.Name != "" && strings.ToLower(v.Detail.Name) != strings.ToLower(filter.Name) {
-			continue
-		}
-
-		if filter.FromCreatedAt != nil && v.CreatedAT.Unix() < filter.FromCreatedAt.Unix() {
-			continue
-		}
-
-		if filter.ToCreatedAt != nil && v.CreatedAT.Unix() > filter.ToCreatedAt.Unix() {
-			continue
-		}
-		*users = append(*users, *v)
-	}
+func (r *repository) applyFilters(query *string, params *[]any, filter *model.Filter) {
+	*query += ` WHERE (LOWER(name) = LOWER($1) OR $1 = '')
+				AND (created_at < $2 OR $2 = '')
+				AND (created_at > $3 OR $3 = '')
+	`
+	*params = append(*params, filter.Name, filter.FromCreatedAt, filter.ToCreatedAt)
 }
 
-func (r *repository) applySorts(users *[]rep.User, filter *model.Filter) {
-	u := *users
-	if strings.ToLower(filter.Sort) == "asc" {
-		sort.Slice(u, func(i, j int) bool {
-			return u[i].ID < u[j].ID
-		})
-	} else {
-		sort.Slice(u, func(i, j int) bool {
-			return u[i].ID > u[j].ID
-		})
-	}
-	*users = u
+func (r *repository) applySorts(query *string, params *[]any, filter *model.Filter) {
+	*query += ` ORDER BY created_at $4
+	`
+	*params = append(*params, filter.Sort)
 }
 
-func (r *repository) offset(users *[]rep.User, filter *model.Filter) {
-	if len(*users) < int(filter.Offset) {
-		*users = make([]rep.User, 0)
-	} else {
-		*users = (*users)[filter.Offset:]
-	}
+func (r *repository) offset(query *string, params *[]any, filter *model.Filter) {
+	*query += ` OFFSET $5
+	`
+	*params = append(*params, filter.Offset)
 }
 
-func (r *repository) limit(users *[]rep.User, filter *model.Filter) {
-	if filter.Limit != 0 && len(*users) > int(filter.Limit) {
-		*users = (*users)[:filter.Limit]
-	}
+func (r *repository) limit(query *string, params *[]any, filter *model.Filter) {
+	*query += ` LIMIT $6
+	`
+	*params = append(*params, filter.Limit)
 }
 
-func (r *repository) Get(ctx context.Context, id uint) (model.User, error) {
-	if _, ok := r.driver[id]; !ok {
-		return model.User{}, errors.New("user not found")
+func (r *repository) Get(ctx context.Context, id uint) (user model.User, err error) {
+	query := "SELECT * FROM users WHERE id=?"
+	pgx, err := r.driver.Query(ctx, query, id)
+	if err != nil {
+		return model.User{}, err
 	}
+	val, err := pgx.Values()
+	if err != nil {
+		return model.User{}, err
+	}
+	fmt.Println(val)
 
-	return converter.ToUserFromRep(*r.driver[id]), nil
+	return model.User{}, nil
 }
 
 func (r *repository) Create(ctx context.Context, detail model.UserDetail) (model.User, error) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
+	sql := `INSERT INTO "user" (name, phone, created_at, updated_at) VALUES ($1, $2, $3, $4)`
+	_, err := r.driver.Exec(ctx, sql, detail.Name, detail.Phone,
+		time.Now().Format("2006-01-02 15:04:05"),
+		time.Now().Format("2006-01-02 15:04:05"))
 
-	user := converter.FromUserDetailToRep(uint(len(r.driver)), detail)
-	user.CreatedAT = time.Now()
-	user.UpdatedAT = time.Now()
+	if err != nil {
+		return model.User{}, err
+	}
 
-	r.driver[user.ID] = &user
-
-	return converter.ToUserFromRep(user), nil
+	return model.User{}, nil
 }
 
 func (r *repository) Update(ctx context.Context, id uint, user model.UserDetail) error {
-	_, ok := r.driver[id]
-
-	if !ok {
-		return errors.New("user not found")
-	}
-
-	userRepDetail := converter.FromUserDetailToRepUserDetail(user)
-	r.driver[id].Detail = userRepDetail
-	r.driver[id].UpdatedAT = time.Now()
-
 	return nil
 }
 
 func (r *repository) Delete(ctx context.Context, id uint) error {
-	if _, ok := r.driver[id]; !ok {
-		return errors.New("user not found")
-	}
-
-	delete(r.driver, id)
-
 	return nil
 }

@@ -2,43 +2,29 @@ package app
 
 import (
 	"github.com/vladislavninetyeight/service/internal/app/router"
-	"github.com/vladislavninetyeight/service/internal/providers"
+	"github.com/vladislavninetyeight/service/internal/app/server"
+	"github.com/vladislavninetyeight/service/internal/config"
+	"net/http"
 )
 
 type App struct {
-	serviceProvider *providers.ServiceProvider
+	Server *http.Server
 }
 
-func New() (*App, error) {
-	a := App{}
-	err := a.init()
-
-	if err != nil {
-		return nil, err
-	}
-
-	return &a, nil
+func New(config *config.Config) *App {
+	app := &App{}
+	app.initServer(&config.Server)
+	return app
 }
 
-func (a *App) init() error {
-	err := a.initServiceProvider()
-
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (a *App) initServiceProvider() error {
-	a.serviceProvider = providers.NewServiceProvider()
-	return nil
+func (a *App) initServer(config *config.Server) {
+	routs := router.New()
+	a.Server = server.New(config)
+	a.Server.Handler = routs
 }
 
 func (a *App) Serve() error {
-	routs := router.New(*a.serviceProvider)
-	a.serviceProvider.GetHTTPServer().Handler = routs
-	err := a.serviceProvider.GetHTTPServer().ListenAndServe()
+	err := a.Server.ListenAndServe()
 
 	if err != nil {
 		return err

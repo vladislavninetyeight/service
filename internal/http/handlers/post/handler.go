@@ -8,20 +8,20 @@ import (
 )
 
 type Service interface {
-	Create(ctx context.Context, post model.PostDetail) (uint, error)
+	Create(ctx context.Context, post model.PostDetail) error
 	GetAll(ctx context.Context) ([]model.Post, error)
 }
 
-func Store(request *http.Request, service Service) (uint, error) {
+func Store(request *http.Request, service Service) error {
 	ctx := context.TODO()
 
 	post := converter.FromRequestToPostDetail(request)
-	id, err := service.Create(ctx, post)
+	err := service.Create(ctx, post)
 	if err != nil {
 		// TODO
 	}
 
-	return id, nil
+	return nil
 }
 
 func GetAll(request *http.Request, service Service) (model.PostGetAllResponse, error) {
@@ -29,7 +29,7 @@ func GetAll(request *http.Request, service Service) (model.PostGetAllResponse, e
 
 	posts, err := service.GetAll(ctx)
 	if err != nil {
-		// TODO
+		//TODO
 	}
 
 	return converter.FromPostsToGetAllResponse(posts), nil

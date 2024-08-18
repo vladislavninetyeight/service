@@ -29,11 +29,8 @@ func FromPostDetailToRep(id uint, detail model.PostDetail) rep.Post {
 	}
 }
 
-func ToPostsFromReps(reps []rep.Post) []model.Post {
-	posts := make([]model.Post, 0)
-	for _, post := range reps {
-		posts = append(posts, ToPostFromRep(post))
-	}
+func ToPostsFromReps() []model.Post {
+	posts := []model.Post{}
 
 	return posts
 }

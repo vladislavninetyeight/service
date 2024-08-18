@@ -3,17 +3,23 @@ package user
 import (
 	"context"
 	"github.com/vladislavninetyeight/service/internal/model"
-	"github.com/vladislavninetyeight/service/internal/repositories"
-	"github.com/vladislavninetyeight/service/internal/services"
+	"github.com/vladislavninetyeight/service/internal/repositories/user"
 )
 
-var _ services.UserService = (*service)(nil)
-
-type service struct {
-	repo repositories.UserRepository
+type Service interface {
+	Create(ctx context.Context, user model.UserDetail) (uint, error)
+	GetAll(ctx context.Context, filter *model.Filter) ([]model.User, error)
+	Update(ctx context.Context, user model.UserDetail, id uint) (model.User, error)
+	Delete(ctx context.Context, id uint) error
 }
 
-func NewUserService(repo repositories.UserRepository) *service {
+var _ Service = (*service)(nil)
+
+type service struct {
+	repo user.Repository
+}
+
+func NewUserService(repo user.Repository) *service {
 	return &service{
 		repo: repo,
 	}

@@ -21,3 +21,7 @@ func FromPostsToGetAllResponse(posts []model.Post) model.PostGetAllResponse {
 		Posts: posts,
 	}
 }
+
+func ToPostsFromReps() []model.Post {
+	return []model.Post{}
+}

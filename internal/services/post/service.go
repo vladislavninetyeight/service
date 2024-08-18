@@ -1,32 +1,38 @@
-package user
+package post
 
 import (
 	"context"
 	"github.com/vladislavninetyeight/service/internal/model"
-	"github.com/vladislavninetyeight/service/internal/repositories"
-	"github.com/vladislavninetyeight/service/internal/services"
+	"github.com/vladislavninetyeight/service/internal/repositories/post"
 )
 
-var _ services.PostService = (*service)(nil)
-
-type service struct {
-	repo repositories.PostRepository
+type Service interface {
+	Create(ctx context.Context, post model.PostDetail) error
+	GetAll(ctx context.Context) ([]model.Post, error)
+	Update(ctx context.Context, post model.PostDetail, id uint) (model.Post, error)
+	Delete(ctx context.Context, id uint) error
 }
 
-func NewPostService(repo repositories.PostRepository) *service {
+var _ Service = (*service)(nil)
+
+type service struct {
+	repo post.Repository
+}
+
+func NewPostService(repo post.Repository) *service {
 	return &service{
 		repo: repo,
 	}
 }
 
-func (s *service) Create(ctx context.Context, post model.PostDetail) (uint, error) {
-	id, err := s.repo.Create(ctx, post)
+func (s *service) Create(ctx context.Context, post model.PostDetail) error {
+	err := s.repo.Create(ctx, post)
 
 	if err != nil {
-		// TODO
+		return err
 	}
 
-	return id, nil
+	return nil
 }
 func (s *service) GetAll(ctx context.Context) ([]model.Post, error) {
 	posts, err := s.repo.GetAll(ctx)
