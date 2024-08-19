@@ -15,15 +15,3 @@ func FromRequestToUserDetail(request *http.Request) model.UserDetail {
 	}
 	return detail
 }
-
-func FromUsersToGetAllUserResponse(users []model.User) model.GetAllUserResponse {
-	return model.GetAllUserResponse{
-		Users: users,
-	}
-}
-
-func FromUserToUpdateUserResponse(user model.User) model.UpdateUserResponse {
-	return model.UpdateUserResponse{
-		User: user,
-	}
-}

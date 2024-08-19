@@ -6,7 +6,6 @@ import (
 	"github.com/vladislavninetyeight/service/internal/http/handlers/post"
 	"github.com/vladislavninetyeight/service/internal/http/handlers/user"
 	"github.com/vladislavninetyeight/service/internal/http/middleware"
-	"github.com/vladislavninetyeight/service/internal/http/requests"
 	"github.com/vladislavninetyeight/service/internal/providers"
 	"net/http"
 	"net/url"
@@ -23,7 +22,7 @@ func initRoutes(r chi.Router) chi.Router {
 
 	r.Group(func(r chi.Router) {
 		r.Post("/user", func(writer http.ResponseWriter, request *http.Request) {
-			errMessages := requests.StoreUserValidate(request)
+			errMessages := user.StoreUserValidate(request)
 			if errMessages.Encode() != "" {
 				err := badRequest(writer, errMessages)
 				if err != nil {
@@ -50,7 +49,7 @@ func initRoutes(r chi.Router) chi.Router {
 		})
 
 		r.Get("/users", func(writer http.ResponseWriter, request *http.Request) {
-			errMessages := requests.GetUsersValidate(request)
+			errMessages := user.GetUsersValidate(request)
 
 			if errMessages.Encode() != "" {
 				err := badRequest(writer, errMessages)
@@ -77,7 +76,7 @@ func initRoutes(r chi.Router) chi.Router {
 		})
 
 		r.Patch("/user/{id}", func(writer http.ResponseWriter, request *http.Request) {
-			errMessages := requests.UpdateUserValidate(request)
+			errMessages := user.UpdateUserValidate(request)
 			if errMessages.Encode() != "" {
 				err := badRequest(writer, errMessages)
 				if err != nil {
@@ -113,7 +112,7 @@ func initRoutes(r chi.Router) chi.Router {
 
 	r.Group(func(r chi.Router) {
 		r.Post("/post", func(writer http.ResponseWriter, request *http.Request) {
-			errMessages := requests.StorePostValidate(request)
+			errMessages := post.StorePostValidate(request)
 
 			if errMessages.Encode() != "" {
 				err := badRequest(writer, errMessages)

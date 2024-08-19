@@ -2,10 +2,6 @@ package model
 
 import "time"
 
-type PostGetAllResponse struct {
-	Posts []Post
-}
-
 type Post struct {
 	ID        uint
 	Detail    PostDetail

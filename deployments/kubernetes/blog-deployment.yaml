@@ -18,6 +18,16 @@ spec:
           ports:
             - containerPort: 8080
           env:
+            - name: KAFKA_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: kafka-config
+                  key: KAFKA_URL
+            - name: KAFKA_TOPIC
+              valueFrom:
+                configMapKeyRef:
+                  name: kafka-config
+                  key: KAFKA_TOPIC
             - name: DATABASE_HOST
               value: postgres
             - name: DATABASE_PORT

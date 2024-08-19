@@ -2,17 +2,17 @@ package post
 
 import (
 	"context"
-	"fmt"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/vladislavninetyeight/service/internal/model"
 	"github.com/vladislavninetyeight/service/internal/repositories/post/converter"
+	rep "github.com/vladislavninetyeight/service/internal/repositories/post/model"
 	"sync"
 	"time"
 )
 
 type Repository interface {
-	Create(ctx context.Context, post model.PostDetail) error
+	Create(ctx context.Context, detail model.PostDetail) (post model.Post, err error)
 	GetAll(ctx context.Context) ([]model.Post, error)
 	Get(ctx context.Context, id uint) (model.Post, error)
 	Update(ctx context.Context, post model.PostDetail, id uint) (model.Post, error)
@@ -40,17 +40,32 @@ func NewPostRepository(driver Driver) *repository {
 	}
 }
 
-func (r *repository) Create(ctx context.Context, detail model.PostDetail) error {
+func (r *repository) Create(ctx context.Context, detail model.PostDetail) (post model.Post, err error) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
-	sql := "INSERT INTO post (title, body, user_id, created_at, updated_at) VALUES ($1, $2, $3, $4, $5)"
-	_, err := r.driver.Exec(ctx, sql, detail.Title, detail.Body, detail.UserID, time.Now(), time.Now())
-	fmt.Println(err)
+
+	var repPost rep.Post
+	var repPostDetail rep.PostDetail
+
+	sql := `INSERT INTO post (title, body, user_id, created_at, updated_at) 
+			VALUES ($1, $2, $3, $4, $5) RETURNING id, created_at, updated_at
+			RETURNING id, title, body, user_id, created_at, updated_at`
+
+	row := r.driver.QueryRow(ctx, sql, detail.Title, detail.Body, detail.UserID, time.Now(), time.Now())
+
+	err = row.Scan(&repPost)
 	if err != nil {
-		return err
+		return
 	}
 
-	return nil
+	err = row.Scan(&repPostDetail)
+	if err != nil {
+		return
+	}
+
+	repPost.Detail = repPostDetail
+	post = converter.ToPostFromRep(repPost)
+	return
 }
 
 func (r *repository) GetAll(ctx context.Context) ([]model.Post, error) {

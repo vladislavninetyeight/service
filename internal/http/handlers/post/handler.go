@@ -24,7 +24,7 @@ func Store(request *http.Request, service Service) error {
 	return nil
 }
 
-func GetAll(request *http.Request, service Service) (model.PostGetAllResponse, error) {
+func GetAll(request *http.Request, service Service) (GetAllPostResponse, error) {
 	ctx := context.TODO()
 
 	posts, err := service.GetAll(ctx)
@@ -32,5 +32,5 @@ func GetAll(request *http.Request, service Service) (model.PostGetAllResponse, e
 		//TODO
 	}
 
-	return converter.FromPostsToGetAllResponse(posts), nil
+	return FromPostsToGetAllResponse(posts), nil
 }

@@ -16,12 +16,6 @@ func FromRequestToPostDetail(request *http.Request) model.PostDetail {
 	return detail
 }
 
-func FromPostsToGetAllResponse(posts []model.Post) model.PostGetAllResponse {
-	return model.PostGetAllResponse{
-		Posts: posts,
-	}
-}
-
 func ToPostsFromReps() []model.Post {
 	return []model.Post{}
 }

@@ -2,12 +2,15 @@ package post
 
 import (
 	"context"
+	"encoding/json"
+	"github.com/IBM/sarama"
 	"github.com/vladislavninetyeight/service/internal/model"
 	"github.com/vladislavninetyeight/service/internal/repositories/post"
+	"os"
 )
 
 type Service interface {
-	Create(ctx context.Context, post model.PostDetail) error
+	Create(ctx context.Context, detail model.PostDetail) error
 	GetAll(ctx context.Context) ([]model.Post, error)
 	Update(ctx context.Context, post model.PostDetail, id uint) (model.Post, error)
 	Delete(ctx context.Context, id uint) error
@@ -25,9 +28,28 @@ func NewPostService(repo post.Repository) *service {
 	}
 }
 
-func (s *service) Create(ctx context.Context, post model.PostDetail) error {
-	err := s.repo.Create(ctx, post)
+func (s *service) Create(ctx context.Context, detail model.PostDetail) error {
+	post, err := s.repo.Create(ctx, detail)
+	if err != nil {
+		return err
+	}
 
+	producer, err := sarama.NewSyncProducer([]string{os.Getenv("KAFKA_URL")}, nil)
+	if err != nil {
+		return err
+	}
+
+	postJSON, err := json.Marshal(post)
+	if err != nil {
+		return err
+	}
+
+	msg := &sarama.ProducerMessage{
+		Topic: os.Getenv("KAFKA_TOPIC"),
+		Value: sarama.ByteEncoder(postJSON),
+	}
+
+	_, _, err = producer.SendMessage(msg)
 	if err != nil {
 		return err
 	}

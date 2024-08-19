@@ -2,14 +2,6 @@ package model
 
 import "time"
 
-type GetAllUserResponse struct {
-	Users []User
-}
-
-type UpdateUserResponse struct {
-	User
-}
-
 type User struct {
 	ID        uint
 	Detail    UserDetail

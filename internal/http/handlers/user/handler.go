@@ -29,7 +29,7 @@ func Store(request *http.Request, service Service) (uint, error) {
 	return userId, nil
 }
 
-func GetAll(request *http.Request, service Service) (model.GetAllUserResponse, error) {
+func GetAll(request *http.Request, service Service) (GetAllUserResponse, error) {
 	ctx := context.TODO()
 
 	filters, err := converter.FromRequestToFilter(request)
@@ -42,10 +42,10 @@ func GetAll(request *http.Request, service Service) (model.GetAllUserResponse, e
 		// TODO
 	}
 
-	return converter.FromUsersToGetAllUserResponse(users), nil
+	return FromUsersToGetAllUserResponse(users), nil
 }
 
-func Update(request *http.Request, service Service) (model.UpdateUserResponse, error) {
+func Update(request *http.Request, service Service) (UpdateUserResponse, error) {
 	id := chi.URLParam(request, "id")
 	ctx := context.TODO()
 
@@ -60,7 +60,7 @@ func Update(request *http.Request, service Service) (model.UpdateUserResponse, e
 		// TODO
 	}
 
-	return converter.FromUserToUpdateUserResponse(user), nil
+	return FromUserToUpdateUserResponse(user), nil
 }
 
 func Delete(request *http.Request, service Service) error {

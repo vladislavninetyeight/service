@@ -3,14 +3,14 @@ package model
 import "time"
 
 type Post struct {
-	ID        uint
-	Detail    PostDetail
-	CreatedAt time.Time
-	UpdatedAt time.Time
+	ID        uint       `bson:"id"`
+	Detail    PostDetail `bson:"detail"`
+	CreatedAt time.Time  `bson:"created_at"`
+	UpdatedAt time.Time  `bson:"updated_at"`
 }
 
 type PostDetail struct {
-	Title  string
-	Body   string
-	UserID uint
+	Title  string `bson:"title"`
+	Body   string `bson:"body"`
+	UserID uint   `bson:"user_id"`
 }

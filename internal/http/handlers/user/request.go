@@ -1,4 +1,4 @@
-package requests
+package user
 
 import (
 	"github.com/thedevsaddam/govalidator"
@@ -50,24 +50,6 @@ func UpdateUserValidate(request *http.Request) url.Values {
 	rules := govalidator.MapData{
 		"name":  []string{"min:2"},
 		"phone": []string{"min:11", "max:11"},
-	}
-
-	data := make(map[string]interface{}, 0)
-
-	opts := govalidator.Options{
-		Request: request,
-		Rules:   rules,
-		Data:    &data,
-	}
-
-	return validator.New(opts).ValidateJSON()
-}
-
-func StorePostValidate(request *http.Request) url.Values {
-	rules := govalidator.MapData{
-		"title":   []string{"min:5", "max:50"},
-		"body":    []string{"min:20", "max:3000"},
-		"user_id": []string{"numeric_between:1,"},
 	}
 
 	data := make(map[string]interface{}, 0)
