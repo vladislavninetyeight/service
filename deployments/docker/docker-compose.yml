@@ -10,7 +10,7 @@ services:
       dockerfile: deployments/docker/blog/Dockerfile
     depends_on:
       - db
-    container_name: project
+    container_name: blog
     environment:
       - KAFKA_URL=kafka:9092
       - KAFKA_TOPIC=created.post
