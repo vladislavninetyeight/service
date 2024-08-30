@@ -7,7 +7,7 @@ import (
 )
 
 func New(config *config.Server) *http.Server {
-	address := fmt.Sprintf("%s:%s", config.Host, config.Port)
+	address := fmt.Sprintf(":%s", config.Port)
 
 	return &http.Server{
 		Addr: address,

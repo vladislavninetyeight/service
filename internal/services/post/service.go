@@ -33,8 +33,10 @@ func (s *service) Create(ctx context.Context, detail model.PostDetail) error {
 	if err != nil {
 		return err
 	}
-
-	producer, err := sarama.NewSyncProducer([]string{os.Getenv("KAFKA_URL")}, nil)
+	kafkaUrl := os.Getenv("KAFKA_URL")
+	config := sarama.NewConfig()
+	config.Producer.Return.Successes = true
+	producer, err := sarama.NewSyncProducer([]string{kafkaUrl}, config)
 	if err != nil {
 		return err
 	}
@@ -50,6 +52,7 @@ func (s *service) Create(ctx context.Context, detail model.PostDetail) error {
 	}
 
 	_, _, err = producer.SendMessage(msg)
+
 	if err != nil {
 		return err
 	}

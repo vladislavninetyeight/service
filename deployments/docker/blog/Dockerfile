@@ -5,7 +5,7 @@ WORKDIR /app
 RUN apt-get -y install tzdata
 ENV TZ=Europe/Moscow
 
-COPY ../../.. .
+COPY . .
 
 EXPOSE 8080
 

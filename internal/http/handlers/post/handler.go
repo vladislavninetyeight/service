@@ -2,7 +2,7 @@ package post
 
 import (
 	"context"
-	"github.com/vladislavninetyeight/service/internal/converter"
+	"fmt"
 	"github.com/vladislavninetyeight/service/internal/model"
 	"net/http"
 )
@@ -12,11 +12,11 @@ type Service interface {
 	GetAll(ctx context.Context) ([]model.Post, error)
 }
 
-func Store(request *http.Request, service Service) error {
+func Store(_ *http.Request, detail model.PostDetail, service Service) error {
 	ctx := context.TODO()
 
-	post := converter.FromRequestToPostDetail(request)
-	err := service.Create(ctx, post)
+	err := service.Create(ctx, detail)
+	fmt.Println(err)
 	if err != nil {
 		// TODO
 	}
@@ -24,7 +24,7 @@ func Store(request *http.Request, service Service) error {
 	return nil
 }
 
-func GetAll(request *http.Request, service Service) (GetAllPostResponse, error) {
+func GetAll(_ *http.Request, service Service) (GetAllPostResponse, error) {
 	ctx := context.TODO()
 
 	posts, err := service.GetAll(ctx)

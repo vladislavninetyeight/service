@@ -3,6 +3,7 @@ package router
 import (
 	"encoding/json"
 	"github.com/go-chi/chi/v5"
+	"github.com/vladislavninetyeight/service/internal/converter"
 	"github.com/vladislavninetyeight/service/internal/http/handlers/post"
 	"github.com/vladislavninetyeight/service/internal/http/handlers/user"
 	"github.com/vladislavninetyeight/service/internal/http/middleware"
@@ -112,7 +113,8 @@ func initRoutes(r chi.Router) chi.Router {
 
 	r.Group(func(r chi.Router) {
 		r.Post("/post", func(writer http.ResponseWriter, request *http.Request) {
-			errMessages := post.StorePostValidate(request)
+			model := converter.FromRequestToPostDetail(request)
+			errMessages := post.StorePostValidate(model)
 
 			if errMessages.Encode() != "" {
 				err := badRequest(writer, errMessages)
@@ -122,7 +124,7 @@ func initRoutes(r chi.Router) chi.Router {
 				return
 			}
 
-			err := post.Store(request, provider.GetPostService())
+			err := post.Store(request, model, provider.GetPostService())
 
 			if err != nil {
 				// TODO

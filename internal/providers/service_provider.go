@@ -7,6 +7,7 @@ import (
 	post "github.com/vladislavninetyeight/service/internal/services/post"
 	"github.com/vladislavninetyeight/service/internal/services/user"
 	"github.com/vladislavninetyeight/service/pkg/client/postgresql"
+	"sync"
 )
 
 type ServiceProvider struct {
@@ -14,12 +15,14 @@ type ServiceProvider struct {
 	postService post.Service
 }
 
+var once sync.Once
+
 var serviceProvider *ServiceProvider
 
 func Container() *ServiceProvider {
-	if serviceProvider == nil {
+	once.Do(func() {
 		serviceProvider = &ServiceProvider{}
-	}
+	})
 
 	return serviceProvider
 }

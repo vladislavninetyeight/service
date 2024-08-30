@@ -8,8 +8,8 @@ import (
 
 func FromRequestToPostDetail(request *http.Request) model.PostDetail {
 	var detail model.PostDetail
-
 	err := json.NewDecoder(request.Body).Decode(&detail)
+
 	if err != nil {
 		// TODO
 	}

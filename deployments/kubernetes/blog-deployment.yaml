@@ -32,6 +32,8 @@ spec:
               value: postgres
             - name: DATABASE_PORT
               value: "5432"
+            - name: CONFIG_PATH
+              value: ./configs/local.yaml
             - name: DATABASE_NAME
               valueFrom:
                 configMapKeyRef:

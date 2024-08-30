@@ -45,25 +45,18 @@ func (r *repository) Create(ctx context.Context, detail model.PostDetail) (post 
 	defer r.mu.Unlock()
 
 	var repPost rep.Post
-	var repPostDetail rep.PostDetail
 
-	sql := `INSERT INTO post (title, body, user_id, created_at, updated_at) 
-			VALUES ($1, $2, $3, $4, $5) RETURNING id, created_at, updated_at
-			RETURNING id, title, body, user_id, created_at, updated_at`
+	sql := `INSERT INTO post (title, body, user_id, created_at, updated_at)
+			VALUES ($1, $2, $3, $4, $5)
+			RETURNING post_id, title, body, user_id, created_at, updated_at`
 
 	row := r.driver.QueryRow(ctx, sql, detail.Title, detail.Body, detail.UserID, time.Now(), time.Now())
 
-	err = row.Scan(&repPost)
+	err = row.Scan(&repPost.ID, &repPost.Detail.Title, &repPost.Detail.Body, &repPost.Detail.UserID, &repPost.CreatedAt, &repPost.UpdatedAt)
 	if err != nil {
 		return
 	}
 
-	err = row.Scan(&repPostDetail)
-	if err != nil {
-		return
-	}
-
-	repPost.Detail = repPostDetail
 	post = converter.ToPostFromRep(repPost)
 	return
 }
